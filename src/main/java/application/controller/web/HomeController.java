@@ -66,7 +66,43 @@ public class HomeController extends BaseController{
             categoryVMList.add(categoryVM);
         }
 
+        /**
+         * set list productVM
+         */
 
+        Sort sortable = new Sort(Sort.Direction.ASC,"id");
+        if(sort != null) {
+            if (sort.equals("ASC")) {
+                sortable = new Sort(Sort.Direction.ASC,"price");
+            }else {
+                sortable = new Sort(Sort.Direction.DESC,"price");
+            }
+        }
+
+        Pageable pageable = new PageRequest(page, size, sortable);
+        Page<Product> productPage;
+
+        if(categoryId != null) {
+            productPage = productService.getListProductByCategoryOrProductNameContaining(pageable,categoryId,null);
+            Category category = categoryService.findOne(categoryId);
+            vm.setKeyWord(category.getName());
+        } else if (productName.getName() != null && !productName.getName().isEmpty()) {
+            productPage = productService.getListProductByCategoryOrProductNameContaining(pageable,null,productName.getName().trim());
+            vm.setKeyWord("Find with key: " + productName.getName());
+        } else {
+            productPage = productService.getListProductByCategoryOrProductNameContaining(pageable,null,null);
+        }
+
+        List<ProductVM> productVMList = new ArrayList<>();
+
+        for(Product product : productPage.getContent()) {
+            ProductVM productVM = new ProductVM();
+            productVM.setId(product.getId());
+            productVM.setName(product.getName());
+            productVM.setMainImage(product.getMainImage());
+            productVM.setPrice(product.getPrice());
+            productVMList.add(productVM);
+        }
 
         /**
          * set vm
@@ -75,9 +111,14 @@ public class HomeController extends BaseController{
         vm.setListBanners(listBanners);
         vm.setLayoutHeaderVM(this.getLayoutHeaderVM());
         vm.setCategoryVMList(categoryVMList);
+        vm.setProductVMList(productVMList);
+        if(productVMList.size() == 0) {
+            vm.setKeyWord("Not found any product");
+        }
 
 
         model.addAttribute("vm",vm);
+        model.addAttribute("page",productPage);
         return "home";
     }
 
