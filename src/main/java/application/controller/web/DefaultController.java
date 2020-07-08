@@ -1,5 +1,6 @@
 package application.controller.web;
 
+import application.constant.StatusRegisterUserEnum;
 import application.data.model.User;
 import application.data.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,10 @@ public class DefaultController {
 
     @RequestMapping(path="/register-user", method = RequestMethod.POST)
     public String registerNewUser(@Valid @ModelAttribute("user") User user){
-        userService.registerNewUser(user);
+        StatusRegisterUserEnum statusRegisterUserEnum = userService.registerNewUser(user);
+        if (statusRegisterUserEnum.equals(StatusRegisterUserEnum.Error_OnSystem)){
+            return "redirect:/register?error-system";
+        }
         return "redirect:/login";
     }
 
