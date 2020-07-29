@@ -51,4 +51,7 @@ public class CategoryService {
         return categoryRepository.getTotalCategories();
     }
 
+    public Page<Category> getListCategoryByCategoryNameContaining(Pageable pageable, String categoryName){
+        return categoryRepository.getListCategoryByCategoryNameContaining(pageable,categoryName);
+    }
 }

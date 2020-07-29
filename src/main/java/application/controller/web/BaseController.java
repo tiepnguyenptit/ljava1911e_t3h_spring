@@ -104,4 +104,22 @@ public class BaseController {
         }
     }
 
+    public LayoutHeaderAdminVM getLayoutHeaderAdminVM() {
+
+        LayoutHeaderAdminVM vm = new LayoutHeaderAdminVM();
+
+        String  username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User userEntity = userService.findUserByUsername(username);
+
+        if(userEntity!=null) {
+            vm.setUserName(username);
+            if(userEntity.getAvatar() != null) {
+                vm.setAvatar(userEntity.getAvatar());
+            } else vm.setAvatar("https://iptc.org/wp-content/uploads/2018/05/avatar-anonymous-300x300.png");
+        }
+
+        return vm;
+
+    }
+
 }

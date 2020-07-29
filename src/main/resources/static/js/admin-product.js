@@ -44,10 +44,7 @@ $(document).ready(function() {
 
     $(".edit-product").on("click", function () {
         var pdInfo = $(this).data("product");
-        console.log(pdInfo);
-        NProgress.start();
         axios.get("/api/product/detail/" + pdInfo).then(function(res){
-            NProgress.done();
             if(res.data.success) {
                 dataProduct.id = res.data.data.id;
                 $("#input-product-name").val(res.data.data.name);
@@ -58,10 +55,8 @@ $(document).ready(function() {
                     $('.product-main-image').attr('src', res.data.data.mainImage);
                 }
             }else {
-                console.log("ahihi");
             }
         }, function(err){
-            NProgress.done();
         })
     });
 

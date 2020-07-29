@@ -5,6 +5,7 @@ import application.extension.CustomDateSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import javax.persistence.Entity;
 import java.util.Date;
 
 public class ProductDTO {
@@ -21,6 +22,20 @@ public class ProductDTO {
     @JsonSerialize(using = CustomDateSerializer.class)
     @JsonDeserialize(using = CustomDateDeserializer.class)
     private Date createdDate;
+
+    public ProductDTO() {
+    }
+
+    public ProductDTO(String name, String shortDesc) {
+        this.name = name;
+        this.shortDesc = shortDesc;
+    }
+
+    public ProductDTO(String name, String shortDesc, String categoryName) {
+        this.categoryName = categoryName;
+        this.name = name;
+        this.shortDesc = shortDesc;
+    }
 
     public int getId() {
         return id;
