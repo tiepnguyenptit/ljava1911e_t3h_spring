@@ -5,19 +5,131 @@ $(function() {
    */
   'use strict';
 
-  var dataChart = [];
-  var labelChart = [];
+  var dataChartHotProductInMonth = [];
+  var labelChartHotProductInMonth = [];
 
-  for(var i=0;i<vm.chartDataVMS.length;i++) {
-    dataChart.push(vm.chartDataVMS[i].value);
-    labelChart.push(vm.chartDataVMS[i].label);
+  var dataChartProductOrderedByCategory = [];
+  var labelChartProductOrderedByCategory = [];
+
+  var dataChartRevenueMonthByYear = [];
+  var labelChartRevenueMonthByYear = [];
+
+
+  function init(){
+    getDataChartHotProductInMonth();
+    getListProductOrderedByCategory();
+    getRevenueMonthByYear();
   }
 
+  function getDataChartHotProductInMonth() {
+    var linkGet = "/api/chart/product/hot-by-month";
+    axios.get(linkGet).then(function(res){
+      if(res.data.success) {
+        var data_get = res.data.data;
+        for(var i=0; i< data_get.length; i++){
+          dataChartHotProductInMonth.push(data_get[i].value);
+          labelChartHotProductInMonth.push(data_get[i].label);
+        }
+        if ($("#doughnutChart").length) {
+
+          var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
+          var doughnutChart = new Chart(doughnutChartCanvas, {
+            type: 'doughnut',
+            data: doughnutPieData,
+            options: doughnutPieOptions
+          });
+        }
+      }
+    }, function(err){
+
+    });
+  }
+
+
+  function getListProductOrderedByCategory() {
+    var linkGet = "/api/chart/category/product-ordered";
+    axios.get(linkGet).then(function(res){
+      if(res.data.success) {
+        var data_get = res.data.data;
+        for(var i=0; i< data_get.length; i++){
+          dataChartProductOrderedByCategory.push(data_get[i].value);
+          labelChartProductOrderedByCategory.push(data_get[i].label);
+        }
+        if ($("#barChart").length) {
+          var barChartCanvas = $("#barChart").get(0).getContext("2d");
+          // This will get the first returned node in the jQuery collection.
+          var barChart = new Chart(barChartCanvas, {
+            type: 'bar',
+            data: data,
+            options: options
+          });
+        }
+      }
+    }, function(err){
+
+    });
+  }
+
+
+  function getRevenueMonthByYear() {
+    var linkGet = "/api/chart/order/revenue";
+    axios.get(linkGet).then(function(res){
+      if(res.data.success) {
+        var data_get = res.data.data;
+        for(var i=0; i< data_get.length; i++){
+          dataChartRevenueMonthByYear.push(data_get[i].value);
+          labelChartRevenueMonthByYear.push(data_get[i].label);
+        }
+
+        if ($("#barChart1").length) {
+          var barChartCanvas = $("#barChart1").get(0).getContext("2d");
+          // This will get the first returned node in the jQuery collection.
+          var barChart = new Chart(barChartCanvas, {
+            type: 'bar',
+            data: dataRevenue,
+            options: options
+          });
+        }
+      }
+    }, function(err){
+
+    });
+  }
+
+  init();
+
   var data = {
-    labels: ["2013", "2014", "2014", "2015", "2016", "2017"],
+    labels: labelChartProductOrderedByCategory,
     datasets: [{
       label: '# of Votes',
-      data: [10, 19, 3, 5, 2, 3],
+      data: dataChartProductOrderedByCategory,
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)'
+      ],
+      borderColor: [
+        'rgba(255,99,132,1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'
+      ],
+      borderWidth: 1,
+      fill: false
+    }]
+  };
+
+
+  var dataRevenue = {
+    labels: labelChartRevenueMonthByYear,
+    datasets: [{
+      label: '# of Votes',
+      data: dataChartRevenueMonthByYear,
       backgroundColor: [
         'rgba(255, 99, 132, 0.2)',
         'rgba(54, 162, 235, 0.2)',
@@ -90,7 +202,7 @@ $(function() {
   var doughnutPieData = {
 
     datasets: [{
-      data: dataChart,
+      data: dataChartHotProductInMonth,
       backgroundColor: [
         'rgba(255, 99, 132, 0.5)',
         'rgba(54, 162, 235, 0.5)',
@@ -110,7 +222,7 @@ $(function() {
     }],
 
     // These labels appear in the legend and in the tooltips when hovering different arcs
-    labels: labelChart
+    labels: labelChartHotProductInMonth
   };
   var doughnutPieOptions = {
     responsive: true,
@@ -311,15 +423,7 @@ $(function() {
     });
   }
 
-  if ($("#doughnutChart").length) {
 
-    var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
-    var doughnutChart = new Chart(doughnutChartCanvas, {
-      type: 'doughnut',
-      data: doughnutPieData,
-      options: doughnutPieOptions
-    });
-  }
 
   if ($("#pieChart").length) {
     var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
